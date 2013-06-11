@@ -1,0 +1,873 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="flows1">
+    <global-element type="http://www.mulesoft.org/schema/mule/netsuite/config" name="Netsuite" entity-id="Netsuite#1">
+        <properties>
+            <property name="defaultEndpoint"/>
+            <property value="" name="email"/>
+            <property name="auxiliary;metauseMetaData"/>
+            <property value="Netsuite" name="name"/>
+            <property value="" name="account"/>
+            <property value="" name="password"/>
+            <property name="endpoint"/>
+            <property value="1" name="auxiliary;index"/>
+            <property value="3" name="roleId"/>
+        </properties>
+    </global-element>
+    <global-element type="http://www.mulesoft.org/schema/mule/zuora/config" name="Zuora" entity-id="Zuora#1">
+        <properties>
+            <property value="" name="username"/>
+            <property value="Zuora" name="name"/>
+            <property name="client-ref"/>
+            <property value="" name="password"/>
+            <property value="https://apisandbox.zuora.com/apps/services/a/29.0" name="endpoint"/>
+            <property value="2" name="auxiliary;index"/>
+        </properties>
+    </global-element>
+    <global-element type="http://www.mulesoft.org/schema/mule/sfdc/config" name="Salesforce" entity-id="Salesforce#1">
+        <properties>
+            <property name="proxyUsername"/>
+            <property value="" name="securityToken"/>
+            <property name="proxyHost"/>
+            <property name="allowFieldTruncationSupport"/>
+            <property name="auxiliary;metauseMetaData"/>
+            <property name="assignmentRuleId"/>
+            <property name="proxyPort"/>
+            <property value="" name="password"/>
+            <property name="clientId"/>
+            <property name="url"/>
+            <property value="m" name="username"/>
+            <property name="useDefaultRule"/>
+            <property value="Salesforce" name="name"/>
+            <property name="timeObjectStore-ref"/>
+            <property value="3" name="auxiliary;index"/>
+            <property name="proxyPassword"/>
+        </properties>
+    </global-element>
+    <global-element type="http://www.springframework.org/schema/beans/bean" name="Bean" entity-id="Bean#1">
+        <properties>
+            <property name="factory-bean"/>
+            <property name="abstract"/>
+            <property name="scope"/>
+            <property name="init-method"/>
+            <property name="autowire-candidate"/>
+            <property name="factory-method"/>
+            <property value="org.mule.util.store.SimpleMemoryObjectStore" name="class"/>
+            <property name="parent"/>
+            <property name="children"/>
+            <property name="lazy-init"/>
+            <property value="beans@spring@http://www.springframework.org/schema/beans" name="auxiliary;wrappedIn"/>
+            <property value="objectStore" name="id"/>
+            <property name="primary"/>
+            <property name="name"/>
+            <property name="autowire"/>
+            <property name="destroy-method"/>
+            <property value="5" name="auxiliary;index"/>
+            <property value="4" name="auxiliary;wrapIn"/>
+            <property name="depends-on"/>
+        </properties>
+    </global-element>
+    <flow SubFlow="false" name="ListInvoices" entity-id="e8875e40-10cb-4594-b782-486968eedc0f">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property value="6" name="auxiliary;index"/>
+        </properties>
+        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#1">
+            <graphicalData height="0" width="0" y="0" x="0"/>
+            <endpoint message-exchange-pattern="RequestResponse" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="HTTP#1">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="9090" name="port"/>
+                    <property value="localhost" name="host"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="followRedirects"/>
+                    <property value="http://www.mulesoft.org/schema/mule/http/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="keep-alive"/>
+                    <property name="contentType"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="password"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="httpLabel"/>
+                    <property name="address"/>
+                    <property value="listinvoices" name="path"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="method"/>
+                    <property name="user"/>
+                    <property name="responseTimeout"/>
+                    <property name="mimeType"/>
+                    <property value="7" name="auxiliary;index"/>
+                    <property name="connector-ref"/>
+                </properties>
+            </endpoint>
+            <pattern type="http://www.mulesoft.org/schema/mule/zuora/zuora-connector" name="Zuora" entity-id="Zuora#2">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name=""/>
+                    <property name="username"/>
+                    <property value="select InvoiceNumber,Amount from Invoice where AccountId='4028e6963716432e01374fe806cc79e1'" name="zquery"/>
+                    <property value="http://www.mulesoft.org/schema/mule/zuora/find" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="password"/>
+                    <property value="Zuora" name="config-ref"/>
+                    <property value="8" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/collection-splitter" name="Collection Splitter" entity-id="Collection Splitter#1">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="businessEventsLabel"/>
+                    <property name="enableCorrelation"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property value="9" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <scope type="org.mule.tooling.ui.modules.core.scope.enricher" name="Message Enricher" entity-id="Message Enricher#1">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="source"/>
+                    <property name="target"/>
+                    <property value="10" name="auxiliary;index"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/core/enrich;0">
+                        <property value="#[payload]" name="source"/>
+                        <property value="#[variable:zuorainvoiceitems]" name="target"/>
+                        <property value="12" name="auxiliary;index"/>
+                        <property value="12" name="auxiliary;wrapIn"/>
+                    </property-collection>
+                </properties>
+                <compartment entity-id="compartment#1">
+                    <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#2">
+                        <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/vm/endpoint" name="VM" entity-id="VM#1">
+                            <graphicalData height="0" width="0" y="0" x="0"/>
+                            <properties>
+<property name="businessEventsLabel"/>
+<property name="disableTransportTransformer"/>
+<property name="exchange-pattern"/>
+<property name="tracking:enable-default-events"/>
+<property name="ref"/>
+<property name="transformer-refs"/>
+<property name="address"/>
+<property value="TransferInvoiceItems" name="path"/>
+<property name="encoding"/>
+<property name="responseTransformer-refs"/>
+<property value="11" name="auxiliary;index"/>
+<property name="responseTimeout"/>
+<property name="mimeType"/>
+<property name="connector-ref"/>
+                            </properties>
+                        </endpoint>
+                    </lane>
+                </compartment>
+            </scope>
+        </lane>
+    </flow>
+    <flow SubFlow="false" name="InsertOneInvoice" entity-id="0a0d4dd9-5b60-4dbe-b1a4-00a814f68708">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property value="13" name="auxiliary;index"/>
+        </properties>
+        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#3">
+            <graphicalData height="0" width="0" y="0" x="0"/>
+            <endpoint message-exchange-pattern="RequestResponse" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="HTTP#2">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="9090" name="port"/>
+                    <property value="localhost" name="host"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="followRedirects"/>
+                    <property value="http://www.mulesoft.org/schema/mule/http/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="keep-alive"/>
+                    <property name="contentType"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="password"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="httpLabel"/>
+                    <property name="address"/>
+                    <property value="insertoneinvoice" name="path"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="method"/>
+                    <property name="user"/>
+                    <property name="responseTimeout"/>
+                    <property name="mimeType"/>
+                    <property value="14" name="auxiliary;index"/>
+                    <property name="connector-ref"/>
+                </properties>
+            </endpoint>
+            <pattern type="http://www.mulesoft.org/schema/mule/netsuite/netsuite-connector" name="Netsuite" entity-id="Netsuite#2">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name=""/>
+                    <property value="is(companyName,'ACME Inc.')" name="expression"/>
+                    <property name="email"/>
+                    <property value="http://www.mulesoft.org/schema/mule/netsuite/find-first-record" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="account"/>
+                    <property value="CUSTOMER" name="recordType"/>
+                    <property name="password"/>
+                    <property value="Netsuite" name="config-ref"/>
+                    <property name="endpoint"/>
+                    <property value="15" name="auxiliary;index"/>
+                    <property name="roleId"/>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+    <flow SubFlow="false" name="TransferInvoiceItems" entity-id="c681da63-3d99-4724-b6d8-82b48334273f">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property value="16" name="auxiliary;index"/>
+        </properties>
+        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#4">
+            <graphicalData height="0" width="0" y="0" x="0"/>
+            <endpoint message-exchange-pattern="OneWay" direction="Inbound" type="http://www.mulesoft.org/schema/mule/vm/endpoint" name="VM" entity-id="VM#2">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="businessEventsLabel"/>
+                    <property name="disableTransportTransformer"/>
+                    <property value="one-way" name="exchange-pattern"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="address"/>
+                    <property value="TransferInvoiceItems" name="path"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property value="17" name="auxiliary;index"/>
+                    <property name="responseTimeout"/>
+                    <property name="mimeType"/>
+                    <property name="connector-ref"/>
+                </properties>
+            </endpoint>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#1">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="message"/>
+                    <property name="category"/>
+                    <property value="INFO" name="level"/>
+                    <property value="18" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#2">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="Invoice Amount: #[groovy:payload.getAmount();]" name="message"/>
+                    <property name="category"/>
+                    <property value="INFO" name="level"/>
+                    <property value="19" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+    <flow SubFlow="false" name="CreateCustomer" entity-id="7c24be17-e2dc-46cd-9805-c2bf9d0e233b">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property value="20" name="auxiliary;index"/>
+        </properties>
+        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#5">
+            <graphicalData height="0" width="0" y="0" x="0"/>
+            <endpoint message-exchange-pattern="RequestResponse" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="HTTP#3">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="9090" name="port"/>
+                    <property value="localhost" name="host"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="followRedirects"/>
+                    <property value="http://www.mulesoft.org/schema/mule/http/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="keep-alive"/>
+                    <property name="contentType"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="password"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="httpLabel"/>
+                    <property name="address"/>
+                    <property value="createcustomers" name="path"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="method"/>
+                    <property name="user"/>
+                    <property name="responseTimeout"/>
+                    <property name="mimeType"/>
+                    <property value="21" name="auxiliary;index"/>
+                    <property name="connector-ref"/>
+                </properties>
+            </endpoint>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#3">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="Running CreateCustomer" name="message"/>
+                    <property name="category"/>
+                    <property value="INFO" name="level"/>
+                    <property value="22" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/message-properties-transformer" name="Message Properties" entity-id="Message Properties#1">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="scope"/>
+                    <property name="overwrite"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                    <property value="23" name="auxiliary;index"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/core/add-message-property;0">
+                        <property value="#[groovy: new Date()]" name="value"/>
+                        <property value="today" name="key"/>
+                        <property value="24" name="auxiliary;index"/>
+                        <property value="24" name="auxiliary;wrapIn"/>
+                    </property-collection>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#4">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="#[variable:today]" name="message"/>
+                    <property name="category"/>
+                    <property value="INFO" name="level"/>
+                    <property value="25" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/message-properties-transformer" name="Message Properties" entity-id="Message Properties#2">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="scope"/>
+                    <property name="overwrite"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                    <property value="26" name="auxiliary;index"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/core/add-message-property;0">
+                        <property value="#[groovy:new Date().previous().format('yyyy-MM-dd\'T\'hh:mm:ssZ')]" name="value"/>
+                        <property value="datetoday" name="key"/>
+                        <property value="27" name="auxiliary;index"/>
+                        <property value="27" name="auxiliary;wrapIn"/>
+                    </property-collection>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#5">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="select FirstName,LastName, Id, CreatedDate, WorkEmail,AccountId FROM Contact where CreatedDate &gt;= #[datetoday]" name="message"/>
+                    <property name="category"/>
+                    <property value="INFO" name="level"/>
+                    <property value="28" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/zuora/zuora-connector" name="Zuora" entity-id="Zuora#3">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name=""/>
+                    <property name="username"/>
+                    <property value="select FirstName,LastName, Id, CreatedDate, WorkEmail,AccountId FROM Contact where CreatedDate &gt;= #[datetoday]" name="zquery"/>
+                    <property value="http://www.mulesoft.org/schema/mule/zuora/find" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="password"/>
+                    <property value="Zuora" name="config-ref"/>
+                    <property value="29" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/collection-splitter" name="Collection Splitter" entity-id="Collection Splitter#2">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="businessEventsLabel"/>
+                    <property name="enableCorrelation"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property value="30" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#6">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="#[payload.accountId]" name="message"/>
+                    <property name="category"/>
+                    <property value="INFO" name="level"/>
+                    <property value="31" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#7">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="#[payload.CreatedDate]" name="message"/>
+                    <property name="category"/>
+                    <property value="INFO" name="level"/>
+                    <property value="32" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <scope type="org.mule.tooling.ui.modules.core.scope.enricher" name="GetZuoraAccount" entity-id="Message Enricher#2">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="source"/>
+                    <property name="target"/>
+                    <property value="33" name="auxiliary;index"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/core/enrich;0">
+                        <property value="#[payload]" name="source"/>
+                        <property value="#[variable:zuoraaccountobject]" name="target"/>
+                        <property value="35" name="auxiliary;index"/>
+                        <property value="35" name="auxiliary;wrapIn"/>
+                    </property-collection>
+                </properties>
+                <compartment entity-id="compartment#2">
+                    <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#6">
+                        <pattern type="http://www.mulesoft.org/schema/mule/zuora/zuora-connector" name="Zuora" entity-id="Zuora#4">
+                            <graphicalData height="0" width="0" y="0" x="0"/>
+                            <properties>
+<property name=""/>
+<property name="username"/>
+<property value="select Id,netsuite_sync__c,AccountNumber FROM Account where Id= '#[payload.accountId]'" name="zquery"/>
+<property value="http://www.mulesoft.org/schema/mule/zuora/find" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+<property name="password"/>
+<property value="Zuora" name="config-ref"/>
+<property value="34" name="auxiliary;index"/>
+                            </properties>
+                        </pattern>
+                    </lane>
+                </compartment>
+            </scope>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#8">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="Message: #[groovy:message.getInvocationProperty('zuoraaccountobject').id]" name="message"/>
+                    <property name="category"/>
+                    <property value="INFO" name="level"/>
+                    <property value="36" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#9">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="Found contact... #[payload:]" name="message"/>
+                    <property name="category"/>
+                    <property value="INFO" name="level"/>
+                    <property value="37" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <scope type="org.mule.tooling.ui.modules.core.scope.enricher" name="CreateSFDCContact" entity-id="Message Enricher#3">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="source"/>
+                    <property name="target"/>
+                    <property value="38" name="auxiliary;index"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/core/enrich;0">
+                        <property value="#[payload]" name="source"/>
+                        <property value="#[variable:createdsfdccontact]" name="target"/>
+                        <property value="47" name="auxiliary;index"/>
+                        <property value="47" name="auxiliary;wrapIn"/>
+                    </property-collection>
+                </properties>
+                <compartment entity-id="compartment#3">
+                    <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#7">
+                        <pattern type="http://www.mulesoft.org/schema/mule/sfdc/sfdc-connector" name="Salesforce" entity-id="Salesforce#2">
+                            <graphicalData height="0" width="0" y="0" x="0"/>
+                            <properties>
+<property name=""/>
+<property name="proxyUsername"/>
+<property name="securityToken"/>
+<property name="proxyHost"/>
+<property value="http://www.mulesoft.org/schema/mule/sfdc/create" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+<property name="proxyPort"/>
+<property value="Contact" name="type"/>
+<property name="password"/>
+<property name="url"/>
+<property name="username"/>
+<property name="accessTokenId"/>
+<property value="Salesforce" name="config-ref"/>
+<property value="39" name="auxiliary;index"/>
+<property name="proxyPassword"/>
+<property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/create-objectss;0">
+    <property value="40" name="auxiliary;index"/>
+    <property value="40" name="auxiliary;wrapIn"/>
+    <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/create-objects;1">
+        <property value="41" name="auxiliary;index"/>
+        <property value="41" name="auxiliary;wrapIn"/>
+    </property-collection>
+</property-collection>
+                            </properties>
+                        </pattern>
+                    </lane>
+                </compartment>
+            </scope>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#10">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="#[groovy:message.getInvocationProperty('createdsfdccontact')[0].getSuccess()]" name="message"/>
+                    <property name="category"/>
+                    <property value="INFO" name="level"/>
+                    <property value="48" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <splitter index="49" type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="Choice#1">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property-collection name="b70ef7d0-bae9-4b68-ac13-4477016f5a0f">
+                        <property value="message.getInvocationProperty('createdsfdccontact')[0].getSuccess()==true" name="choice.expression"/>
+                        <property-collection name="choice.attributes">
+                            <property value="message.getInvocationProperty('createdsfdccontact')[0].getSuccess()==true" name="expression"/>
+                            <property value="groovy" name="evaluator"/>
+                        </property-collection>
+                    </property-collection>
+                    <property-collection name="bb390fa9-cb73-4cf5-86f5-e078089ad07b">
+                        <property value="true" name="choice.otherwise"/>
+                        <property-collection name="choice.attributes"/>
+                    </property-collection>
+                </properties>
+                <pattern type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="Choice#2"/>
+                <compartment entity-id="compartment#4">
+                    <lane isChoiceOtherwiseLane="false" index="51" hadOnlyOneElement="false" entity-id="b70ef7d0-bae9-4b68-ac13-4477016f5a0f">
+                        <scope type="http://www.mulesoft.org/schema/mule/core/processor-chain" name="Processor Chain" entity-id="Processor Chain#1">
+                            <graphicalData height="0" width="0" y="0" x="0"/>
+                            <properties>
+<property value="51" name="auxiliary;index"/>
+                            </properties>
+                            <compartment entity-id="compartment#5">
+<lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#8">
+    <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#11">
+        <graphicalData height="0" width="0" y="0" x="0"/>
+        <properties>
+            <property value="#[groovy:message.getInvocationProperty('createdsfdccontact')[0].getSuccess()] needs more process" name="message"/>
+            <property name="category"/>
+            <property value="INFO" name="level"/>
+            <property value="52" name="auxiliary;index"/>
+        </properties>
+    </pattern>
+    <pattern type="http://www.mulesoft.org/schema/mule/core/flow-ref" name="Flow Reference" entity-id="Flow Reference#1">
+        <graphicalData height="0" width="0" y="0" x="0"/>
+        <properties>
+            <property value="CreateNetsuiteCustomerCompany" name="name"/>
+            <property value="53" name="auxiliary;index"/>
+        </properties>
+    </pattern>
+</lane>
+                            </compartment>
+                        </scope>
+                    </lane>
+                    <lane isChoiceOtherwiseLane="true" index="55" hadOnlyOneElement="false" entity-id="bb390fa9-cb73-4cf5-86f5-e078089ad07b">
+                        <scope type="http://www.mulesoft.org/schema/mule/core/processor-chain" name="Processor Chain" entity-id="Processor Chain#2">
+                            <graphicalData height="0" width="0" y="0" x="0"/>
+                            <properties>
+<property value="55" name="auxiliary;index"/>
+                            </properties>
+                            <compartment entity-id="compartment#6">
+<lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#9">
+    <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#12">
+        <graphicalData height="0" width="0" y="0" x="0"/>
+        <properties>
+            <property value="#[groovy:message.getInvocationProperty('createdsfdccontact')[0].getSuccess()] needs no more processing" name="message"/>
+            <property name="category"/>
+            <property value="INFO" name="level"/>
+            <property value="56" name="auxiliary;index"/>
+        </properties>
+    </pattern>
+</lane>
+                            </compartment>
+                        </scope>
+                    </lane>
+                </compartment>
+            </splitter>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/object-to-string-transformer" name="Object to String" entity-id="Object to String#1">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                    <property value="57" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <scope type="http://www.mulesoft.org/schema/mule/core/catch-exception-strategy" name="Catch Exception Strategy" entity-id="Catch Exception Strategy#1">
+                <properties>
+                    <property name="labelConfigureConditionalExecutionUsingExpression"/>
+                    <property name="when"/>
+                    <property name="enableNotifications"/>
+                    <property value="58" name="auxiliary;index"/>
+                </properties>
+                <compartment entity-id="compartment#7"/>
+            </scope>
+        </lane>
+    </flow>
+    <flow SubFlow="true" name="CreateNetsuiteCustomerCompany" entity-id="382ddf1b-0c5d-4c32-9b8a-26cb5a1c6830">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property value="59" name="auxiliary;index"/>
+        </properties>
+        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#10">
+            <graphicalData height="0" width="0" y="0" x="0"/>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#13">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="CreatingNetsuiteCustomerCompany" name="message"/>
+                    <property name="category"/>
+                    <property value="INFO" name="level"/>
+                    <property value="60" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <scope type="org.mule.tooling.ui.modules.core.scope.enricher" name="CreateNetsuiteCompany" entity-id="Message Enricher#4">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="source"/>
+                    <property name="target"/>
+                    <property value="61" name="auxiliary;index"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/core/enrich;0">
+                        <property value="#[payload]" name="source"/>
+                        <property value="#[variable:creatednetsuitecompany]" name="target"/>
+                        <property value="66" name="auxiliary;index"/>
+                        <property value="66" name="auxiliary;wrapIn"/>
+                    </property-collection>
+                </properties>
+                <compartment entity-id="compartment#8">
+                    <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#11">
+                        <pattern type="http://www.mulesoft.org/schema/mule/netsuite/netsuite-connector" name="Netsuite" entity-id="Netsuite#3">
+                            <graphicalData height="0" width="0" y="0" x="0"/>
+                            <properties>
+<property name=""/>
+<property name="email"/>
+<property value="http://www.mulesoft.org/schema/mule/netsuite/add-record" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+<property name="account"/>
+<property value="CUSTOMER" name="recordType"/>
+<property name="password"/>
+<property value="Netsuite" name="config-ref"/>
+<property name="endpoint"/>
+<property value="62" name="auxiliary;index"/>
+<property name="roleId"/>
+<property-collection name="@http://www.mulesoft.org/schema/mule/netsuite/add-record-attributess;0">
+    <property value="63" name="auxiliary;index"/>
+    <property value="63" name="auxiliary;wrapIn"/>
+    <property-collection name="@http://www.mulesoft.org/schema/mule/netsuite/add-record-attributes;1">
+        <property value="" name="value"/>
+        <property value="companyName" name="key"/>
+        <property value="#[groovy:message.getInvocationProperty('zuoraaccountobject')[0].getAccountNumber()]" name="value-ref"/>
+        <property value="64" name="auxiliary;index"/>
+        <property value="64" name="auxiliary;wrapIn"/>
+    </property-collection>
+    <property-collection name="@http://www.mulesoft.org/schema/mule/netsuite/add-record-attributes;2">
+        <property value="" name="value"/>
+        <property value="email" name="key"/>
+        <property value="#[groovy: 'whatever@whatever.com']" name="value-ref"/>
+        <property value="65" name="auxiliary;index"/>
+        <property value="65" name="auxiliary;wrapIn"/>
+    </property-collection>
+</property-collection>
+                            </properties>
+                        </pattern>
+                    </lane>
+                </compartment>
+            </scope>
+            <pattern type="http://www.mulesoft.org/schema/mule/netsuite/netsuite-connector" name="Netsuite" entity-id="Netsuite#4">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name=""/>
+                    <property name="email"/>
+                    <property value="http://www.mulesoft.org/schema/mule/netsuite/add-record" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="account"/>
+                    <property value="CONTACT" name="recordType"/>
+                    <property name="password"/>
+                    <property value="Netsuite" name="config-ref"/>
+                    <property name="endpoint"/>
+                    <property value="67" name="auxiliary;index"/>
+                    <property name="roleId"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/netsuite/add-record-attributess;0">
+                        <property value="68" name="auxiliary;index"/>
+                        <property value="68" name="auxiliary;wrapIn"/>
+                        <property-collection name="@http://www.mulesoft.org/schema/mule/netsuite/add-record-attributes;4">
+                            <property value="" name="value"/>
+                            <property value="email" name="key"/>
+                            <property value="#[groovy: 'whatever@whatever.com']" name="value-ref"/>
+                            <property value="72" name="auxiliary;index"/>
+                            <property value="72" name="auxiliary;wrapIn"/>
+                        </property-collection>
+                        <property-collection name="@http://www.mulesoft.org/schema/mule/netsuite/add-record-attributes;3">
+                            <property value="" name="value"/>
+                            <property value="firstName" name="key"/>
+                            <property value="#[groovy:payload.getFirstName()]" name="value-ref"/>
+                            <property value="71" name="auxiliary;index"/>
+                            <property value="71" name="auxiliary;wrapIn"/>
+                        </property-collection>
+                        <property-collection name="@http://www.mulesoft.org/schema/mule/netsuite/add-record-attributes;1">
+                            <property value="" name="value"/>
+                            <property value="company" name="key"/>
+                            <property value="#[groovy:creatednetsuitecompany]" name="value-ref"/>
+                            <property value="69" name="auxiliary;index"/>
+                            <property value="69" name="auxiliary;wrapIn"/>
+                        </property-collection>
+                        <property-collection name="@http://www.mulesoft.org/schema/mule/netsuite/add-record-attributes;2">
+                            <property value="" name="value"/>
+                            <property value="lastName" name="key"/>
+                            <property value="#[groovy:payload.getLastName()]" name="value-ref"/>
+                            <property value="70" name="auxiliary;index"/>
+                            <property value="70" name="auxiliary;wrapIn"/>
+                        </property-collection>
+                    </property-collection>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#14">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="Created: #[payload:]" name="message"/>
+                    <property name="category"/>
+                    <property value="INFO" name="level"/>
+                    <property value="73" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+    <flow SubFlow="true" name="GetZuoraAccountInfo" entity-id="7ed66556-5595-4603-9aa8-134e6f038643">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property value="74" name="auxiliary;index"/>
+        </properties>
+        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#12">
+            <graphicalData height="0" width="0" y="0" x="0"/>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#15">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="In Create Account: #[groovy:payload.getAccountId();]" name="message"/>
+                    <property name="category"/>
+                    <property value="INFO" name="level"/>
+                    <property value="75" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/zuora/zuora-connector" name="Zuora" entity-id="Zuora#5">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name=""/>
+                    <property name="username"/>
+                    <property value="select Name,Id FROM Account where id='4028e6963716432e01374fe806cc79e1'" name="zquery"/>
+                    <property value="http://www.mulesoft.org/schema/mule/zuora/find" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="password"/>
+                    <property value="Zuora" name="config-ref"/>
+                    <property value="76" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/scripting/transformer" name="Script" entity-id="Script#1">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                    <property value="77" name="auxiliary;index"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/scripting/script-for-properties;0">
+                        <property value="&#xA;                &#xA;                        " name="text"/>
+                        <property value="groovy" name="engine"/>
+                        <property value="def newpayload = payload.first()&#xA;                                                            &#xA;                                                            &#xA;                                                            return newpayload;" name="inner-text"/>
+                        <property value="78" name="auxiliary;index"/>
+                        <property value="78" name="auxiliary;wrapIn"/>
+                    </property-collection>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/scripting/script;0">
+                        <property value="&#xA;                &#xA;                        " name="text"/>
+                        <property value="groovy" name="engine"/>
+                        <property value="def newpayload = payload.first()&#xA;                                                            &#xA;                                                            &#xA;                                                            return newpayload;" name="inner-text"/>
+                        <property value="78" name="auxiliary;index"/>
+                        <property value="78" name="auxiliary;wrapIn"/>
+                    </property-collection>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+    <flow SubFlow="true" name="UpsertSFDCAccount" entity-id="65bc68b1-e90b-4614-8c28-e5401bc02261">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property value="80" name="auxiliary;index"/>
+        </properties>
+        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#13">
+            <graphicalData height="0" width="0" y="0" x="0"/>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#16">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="Upserting sfdc account" name="message"/>
+                    <property name="category"/>
+                    <property value="INFO" name="level"/>
+                    <property value="81" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/sfdc/sfdc-connector" name="Salesforce" entity-id="Salesforce#3">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name=""/>
+                    <property name="proxyUsername"/>
+                    <property name="securityToken"/>
+                    <property name="proxyHost"/>
+                    <property value="http://www.mulesoft.org/schema/mule/sfdc/upsert" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="proxyPort"/>
+                    <property value="Account" name="type"/>
+                    <property name="password"/>
+                    <property name="url"/>
+                    <property value="AccountID__c" name="externalIdFieldName"/>
+                    <property name="username"/>
+                    <property name="accessTokenId"/>
+                    <property value="Salesforce" name="config-ref"/>
+                    <property name="proxyPassword"/>
+                    <property value="82" name="auxiliary;index"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/upsert-objectss;0">
+                        <property value="83" name="auxiliary;index"/>
+                        <property value="83" name="auxiliary;wrapIn"/>
+                        <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/upsert-objects;1">
+                            <property value="84" name="auxiliary;index"/>
+                            <property value="84" name="auxiliary;wrapIn"/>
+                        </property-collection>
+                    </property-collection>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/scripting/transformer" name="Script" entity-id="Script#2">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                    <property value="87" name="auxiliary;index"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/scripting/script-for-properties;0">
+                        <property value="&#xA;                &#xA;                        " name="text"/>
+                        <property value="groovy" name="engine"/>
+                        <property value="def idstring = payload.id[0];&#xA;                                                            &#xA;                                                            println idstring;&#xA;                                                            &#xA;                                                            return idstring;" name="inner-text"/>
+                        <property value="88" name="auxiliary;index"/>
+                        <property value="88" name="auxiliary;wrapIn"/>
+                    </property-collection>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/scripting/script;0">
+                        <property value="&#xA;                &#xA;                        " name="text"/>
+                        <property value="groovy" name="engine"/>
+                        <property value="def idstring = payload.id[0];&#xA;                                                            &#xA;                                                            println idstring;&#xA;                                                            &#xA;                                                            return idstring;" name="inner-text"/>
+                        <property value="88" name="auxiliary;index"/>
+                        <property value="88" name="auxiliary;wrapIn"/>
+                    </property-collection>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#17">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="Saved Account: #[payload:]" name="message"/>
+                    <property name="category"/>
+                    <property value="INFO" name="level"/>
+                    <property value="90" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+</mule-configuration>
