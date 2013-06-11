@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:quartz="http://www.mulesoft.org/schema/mule/quartz"  xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:zuora="http://www.mulesoft.org/schema/mule/zuora" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:context="http://www.springframework.org/schema/context" xmlns:netsuite="http://www.mulesoft.org/schema/mule/netsuite" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="EE-3.4.0" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/zuora http://www.mulesoft.org/schema/mule/zuora/1.0/mule-zuora.xsd
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/4.0/mule-sfdc.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/netsuite http://www.mulesoft.org/schema/mule/netsuite/1.0/mule-netsuite.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/quartz http://www.mulesoft.org/schema/mule/quartz/3.0/mule-quartz.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+    
+    
+    <netsuite:config name="Netsuite" account="TSTDRV917625" email="netsuite.sandbox@mulesoft.com" password="Mul3NetSuite" roleId="3" doc:name="Netsuite"></netsuite:config>
+    <zuora:config name="Zuora" username="quickbooksdemo@mulesoft.com" password="Melehan1" endpoint="https://apisandbox.zuora.com/apps/services/a/29.0" doc:name="Zuora"/>
+    <sfdc:config name="Salesforce" username="david@testenvironment.com" password="Muleftw1n" securityToken="h59bxTUv4R4Pai31yD4Kc680" doc:name="Salesforce"/>
+    <spring:beans>
+        <spring:bean id="objectStore" class="org.mule.util.store.SimpleMemoryObjectStore"/>
+    </spring:beans>
+    
+    
+    
+    
+    <flow name="ListInvoices" doc:name="ListInvoices">
+            
+            <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="9090" path="listinvoices" doc:name="HTTP"/>
+             
+             
+             <zuora:find config-ref="Zuora" zquery="select InvoiceNumber,Amount from Invoice where AccountId='4028e6963716432e01374fe806cc79e1'" doc:name="Zuora"/>
+             
+             
+             <collection-splitter doc:name="Collection Splitter"/>
+             
+             <enricher doc:name="Message Enricher">
+             
+              
+              
+              		<vm:outbound-endpoint path="TransferInvoiceItems" doc:name="VM"/>
+              
+            		
+                    <enrich source="#[payload]" target="#[variable:zuorainvoiceitems]"/>
+                    
+             </enricher>
+             
+             
+            
+    
+    </flow>
+      <!-- 
+    
+    <flow name="StartQuartz">
+    
+    
+  
+    
+    <quartz:inbound-endpoint jobName="quartzTask1Job11" repeatInterval="10000" repeatCount="3">
+            <quartz:event-generator-job/>
+        </quartz:inbound-endpoint>
+            <logger level="INFO" message="Running quartz"/>
+        
+        
+         <http:outbound-endpoint host="localhost" port="9090" path="createcustomer" />
+        
+        
+        </flow>
+        
+         -->
+         
+       
+   <!--   <flow name="NetsuiteDemoFlow1">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8081" path="netsuite-test"/>
+        <netsuite:find-first-record config-ref="Netsuite" recordType="CUSTOMER" expression="is(email, 'newcustomer@demo.com')" doc:name="Netsuite"/>
+        <netsuite:initialize config-ref="Netsuite" id="#[payload.getInternalId()]" recordType="CUSTOMER" type="INVOICE"/>
+        <netsuite:add-record-objects config-ref="Netsuite" recordType="INVOICE">
+            <netsuite:records>
+                <netsuite:record value-ref="#[payload]"/>
+            </netsuite:records>
+        </netsuite:add-record-objects>
+        <netsuite:update-record config-ref="Netsuite" id="#[groovy: payload.get(0).getInternalId()]" recordType="INVOICE">
+            <netsuite:attributes>
+                <netsuite:attribute key="amount">100</netsuite:attribute>
+            </netsuite:attributes>
+        </netsuite:update-record>
+        <logger message="The internal id of the invoice just created is =================&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; #[payload.getInternalId()]" level="INFO" doc:name="Logger"/>
+    </flow>
+    
+    
+     -->
+    <flow name="InsertOneInvoice" doc:name="InsertOneInvoice">
+           <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="9090" path="insertoneinvoice" doc:name="HTTP"/>
+    
+    		
+    		<!-- 
+    		
+        	
+             
+             
+             <netsuite:add-record recordType="INVOICE" config-ref="netsuite-config"  doc:name="Netsuite">
+                <netsuite:attributes>
+                    
+                    <netsuite:attribute key="balance" value-ref="#[groovy: '100']" />
+            
+                    
+                </netsuite:attributes>
+            </netsuite:add-record>
+		 --> 
+		 
+		 
+		 <netsuite:find-first-record  config-ref="Netsuite" recordType="CUSTOMER" expression="is(companyName,'ACME Inc.')" doc:name="Netsuite"/>
+    		
+    		
+        	<!-- <netsuite:get-record config-ref="netsuite-config" id="#[groovy: '1864']" recordType="CONTACT"/> -->
+		 
+		 
+		 <!-- 
+		<netsuite:initialize config-ref="netsuite-config" id="#[payload.getInternalId()]" recordType="CUSTOMER" type="INVOICE" doc:name="Netsuite"/>
+        <netsuite:add-record-objects config-ref="Netsuite" recordType="INVOICE" doc:name="Netsuite">
+            <netsuite:records>
+                <netsuite:record value-ref="#[payload]"/>
+            </netsuite:records>
+        </netsuite:add-record-objects>
+        <netsuite:update-record config-ref="Netsuite" id="#[groovy: payload.get(0).getInternalId()]" recordType="INVOICE" doc:name="Netsuite">
+            <netsuite:attributes>
+                <netsuite:attribute key="balance">100</netsuite:attribute>
+            </netsuite:attributes>
+        </netsuite:update-record>
+		 
+    	<logger level="INFO" />
+    		 -->
+    
+    </flow>
+    
+    <flow name="TransferInvoiceItems" doc:name="TransferInvoiceItems">
+            <vm:inbound-endpoint exchange-pattern="one-way" path="TransferInvoiceItems" doc:name="VM"/>
+            
+            
+            <!-- <zuora:find config-ref="Zuora" zquery="select UnitPrice,ProductDescription,ChargeAmount from InvoiceItem where InvoiceId=#[groovy:payload.getInvoiceNumber()" /> -->
+            
+            <!-- <zuora:find config-ref="Zuora" zquery="select UnitPrice,ProductDescription,ChargeAmount from InvoiceItem where InvoiceId='INV00000181'" /> -->
+            
+            
+          <logger level="INFO" doc:name="Logger"/>
+            
+            
+         <!--    <scripting:transformer doc:name="Script">
+                        <scripting:script engine="groovy">
+                            <scripting:text><![CDATA[
+                            
+                            
+                            def newpayload = payload
+                            
+                            println ('found size: '+newpayload.size())
+                            
+							for (i in newpayload) {
+									
+									println('Unknown: '+i)
+							
+							}
+                            
+                            ]]></scripting:text>
+                        </scripting:script>
+                  </scripting:transformer>
+                  
+                  --> 
+                  
+             <logger level="INFO" doc:name="Logger" message="Invoice Amount: #[groovy:payload.getAmount();]" />
+
+
+              		<!-- <netsuite:find-first-record  config-ref="netsuite-config" recordType="CUSTOMER" expression="is(companyName,'ACME Inc.')"/>
+              		
+              		
+              		<netsuite:add-record recordType="INVOICE" config-ref="netsuite-config"  doc:name="Netsuite">
+                			<netsuite:attributes>
+                    		
+                    
+                		</netsuite:attributes>
+                		
+            </netsuite:add-record>
+            		 -->
+            		
+            
+			<!--                   
+                <collection-splitter />
+                
+                
+                <logger level="INFO" doc:name="Logger" message="Invoice Number: #[groovy:payload.getProductDescription();]" />
+                
+                 -->
+                
+                
+    
+    </flow>
+    
+    
+    
+    
+    
+    
+    <flow name="CreateCustomer" doc:name="CreateCustomer">
+    
+    
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="9090" path="createcustomers" doc:name="HTTP"/>
+        
+        
+            <logger level="INFO" message="Running CreateCustomer" doc:name="Logger"/>
+        
+        <message-properties-transformer  doc:name="Message Properties">
+            <add-message-property key="today" value="#[groovy: new Date()]"/>
+        </message-properties-transformer>
+        <logger message="#[variable:today]" level="INFO" doc:name="Logger"/>
+        
+        
+                
+               	<message-properties-transformer doc:name="Message Properties">
+               	
+               	
+               	
+            		<add-message-property key="datetoday" value="#[groovy:new Date().previous().format('yyyy-MM-dd\'T\'hh:mm:ssZ')]"/>
+        	
+               		
+               	
+               	
+               	</message-properties-transformer>
+                
+                
+                         <logger level="INFO" message="select FirstName,LastName, Id, CreatedDate, WorkEmail,AccountId FROM Contact where CreatedDate &gt;= #[datetoday]" doc:name="Logger"/>
+                
+                 
+        
+                 <zuora:find config-ref="Zuora" zquery="select FirstName,LastName, Id, CreatedDate, WorkEmail,AccountId FROM Contact where CreatedDate &gt;= #[datetoday]"  doc:name="Zuora"/>
+
+        
+                        
+         
+         <collection-splitter doc:name="Collection Splitter"/>
+         
+         <logger level="INFO" message="#[payload.accountId]" doc:name="Logger"/>
+         
+         <logger level="INFO" message="#[payload.CreatedDate]" doc:name="Logger"/>
+         
+         
+          <enricher doc:name="GetZuoraAccount">
+        
+        
+                 <zuora:find config-ref="Zuora" zquery="select Id,netsuite_sync__c,AccountNumber FROM Account where Id= '#[payload.accountId]'" doc:name="Zuora"/>
+
+        
+                        <enrich source="#[payload]" target="#[variable:zuoraaccountobject]"/>
+                        
+                        
+         				</enricher>
+        
+                         <logger level="INFO" message="Message: #[groovy:message.getInvocationProperty('zuoraaccountobject').id]" doc:name="Logger"/>
+        
+		
+      
+        
+        <!-- 
+        
+        <choice doc:name="Choice">
+            <when expression="message.getInvocationProperty('zuoraaccountobject').netsuite_sync__c.contains('true')" evaluator="groovy">
+                <processor-chain>
+                     <logger level="INFO" message="#[groovy:message.getInvocationProperty('zuoraaccountobject').id] is synced"/>
+                    
+                </processor-chain>
+            </when>
+            
+            <otherwise>
+                <processor-chain>
+                          <logger level="INFO" message="#[groovy:message.getInvocationProperty('zuoraaccountobject').id] is not synced"/>
+                   
+                </processor-chain>
+            </otherwise>
+        </choice>
+         -->
+        
+        
+        <!-- 
+        
+        <enricher doc:name="UpdateZuoraAccount">
+        
+        
+           <zuora:update type="Account" config-ref="Zuora" >
+			<zuora:zobjects >
+				<zuora:zobject >
+		
+				<Id>#[groovy:payload.accountId]</Id>
+		        	<netsuite_sync__c>true</netsuite_sync__c>
+		
+				</zuora:zobject>
+		
+			</zuora:zobjects>
+		</zuora:update>      
+        		 <enrich source="#[payload]" target="#[variable:updatedaccount]"/>
+                        
+                        
+         </enricher>
+     
+         -->
+        
+        
+                <logger level="INFO" message="Found contact... #[payload:]" doc:name="Logger"/>
+        
+        
+       
+        
+        
+                       <!-- 
+				
+				<message-properties-transformer scope="invocation" doc:name="Message Properties">
+            <add-message-property key="zuoraid" value="#[groovy:payload.getId()]"/>
+        </message-properties-transformer>
+                        
+
+                         -->
+                        
+        
+       
+        
+        
+        <!-- 
+        <enricher doc:name="UpsertSFDCAccount">
+        
+                        <flow-ref name="UpsertSFDCAccount" />
+        
+                        <enrich source="#[payload]" target="#[variable:createdsfdcaccount]"/>
+                        
+                        
+         </enricher>
+         
+         -->
+        
+        
+         <enricher doc:name="CreateSFDCContact">
+         
+       
+            <sfdc:create config-ref="Salesforce" type="Contact" doc:name="Salesforce" >
+            <sfdc:objects >
+            
+                <sfdc:object  >
+                    <FirstName>#[groovy:payload.getFirstName()]</FirstName>
+                    <LastName>#[groovy:payload.getLastName()]</LastName>
+                    <Email>#[groovy:if (payload.getWorkEmail()!=null) {return payload.getWorkEmail()} else {return ''}]</Email>
+                    <AccountId>001U000000ISsuK</AccountId>
+                    <Zuora_Account_Id__c>#[groovy:message.getInvocationProperty('zuoraaccountobject')[0].id]</Zuora_Account_Id__c>
+                </sfdc:object>
+            
+            </sfdc:objects>
+        </sfdc:create>
+        
+                <enrich source="#[payload]" target="#[variable:createdsfdccontact]"/>
+        
+        
+        </enricher>
+        
+        
+        <logger level="INFO" message="#[groovy:message.getInvocationProperty('createdsfdccontact')[0].getSuccess()]" doc:name="Logger"/>
+        
+         <choice doc:name="Choice">
+            <when expression="message.getInvocationProperty('createdsfdccontact')[0].getSuccess()==true" evaluator="groovy">
+                <processor-chain doc:name="Processor Chain">
+                     <logger level="INFO" message="#[groovy:message.getInvocationProperty('createdsfdccontact')[0].getSuccess()] needs more process" doc:name="Logger"/>
+                     
+                   
+                         
+         
+       						<flow-ref name="CreateNetsuiteCustomerCompany" doc:name="Flow Reference"/>
+                               
+                                
+                         
+        				
+        				<!-- 
+        				<enricher doc:name="CreateInvoice">
+        				
+        				
+        				
+        				       						<flow-ref name="CreateInvoice"/>
+        				
+        				
+        				                         <enrich source="#[payload]" target="#[variable:createdinvoice]"/>
+        				
+						                
+        				
+        				</enricher>
+        				
+        				 -->
+        				
+        			  <!-- 
+        				
+        				
+        		
+        				 
+        				 	
+        				  <netsuite:find-first-record  config-ref="netsuite-config" recordType="CUSTOMER" expression="is(companyName,#[groovy:message.getInvocationProperty('creatednetsuitecompany')[0].getId()]"/> -->
+    		
+    		
+						        <!-- 	<netsuite:get-record config-ref="netsuite-config" id="#[groovy: '2174']" recordType="CUSTOMER"/> -->
+								 
+								 
+								 <!--  
+						 	 <netsuite:add-record recordType="INVOICE" config-ref="netsuite-config"  doc:name="Netsuite">
+						                <netsuite:attributes>
+						                    
+						                    <netsuite:attribute key="entity" value-ref="#[groovy:payload.getId()]" />
+						                    
+						                    
+						                    
+						                    
+						                </netsuite:attributes>
+						                
+						                </netsuite:add-record>
+    		
+    		
+    						 -->
+                    
+                </processor-chain>
+            </when>
+            
+            <otherwise>
+                <processor-chain doc:name="Processor Chain">
+                          <logger level="INFO" message="#[groovy:message.getInvocationProperty('createdsfdccontact')[0].getSuccess()] needs no more processing" doc:name="Logger"/>
+                          
+                          
+                   
+                </processor-chain>
+            </otherwise>
+        </choice>
+        
+        
+        
+        <!-- 
+          <enricher doc:name="CreateNetsuiteCustomerCompany">
+         
+       
+                                <flow-ref name="CreateNetsuiteCustomerCompany" />
+                                
+                                <enrich source="#[payload]" target="#[variable:creatednetsuitecustomercompany]"/>
+                                
+                            
+        
+        </enricher>
+         -->
+        
+        
+       <object-to-string-transformer doc:name="Object to String"/>
+        <catch-exception-strategy doc:name="Catch Exception Strategy"/>
+        
+        
+        
+        
+    </flow>
+    
+    
+    
+   
+    
+    
+    
+      <sub-flow name="CreateNetsuiteCustomerCompany" doc:name="CreateNetsuiteCustomerCompany">
+            
+            
+            <logger level="INFO" message="CreatingNetsuiteCustomerCompany" doc:name="Logger"/>
+            
+            
+               <enricher doc:name="CreateNetsuiteCompany">
+           
+       		
+                            
+            <netsuite:add-record recordType="CUSTOMER" config-ref="Netsuite"  doc:name="Netsuite">
+                <netsuite:attributes>
+                    <netsuite:attribute key="companyName" value-ref="#[groovy:message.getInvocationProperty('zuoraaccountobject')[0].getAccountNumber()]" />
+                    
+                    <netsuite:attribute key="email" value-ref="#[groovy: 'whatever@whatever.com']" />
+            
+                    
+                </netsuite:attributes>
+            </netsuite:add-record>
+                    <enrich source="#[payload]" target="#[variable:creatednetsuitecompany]"/>
+            
+            </enricher>
+            
+            
+                
+            <netsuite:add-record recordType="CONTACT" config-ref="Netsuite"  doc:name="Netsuite">
+                <netsuite:attributes>
+                    <netsuite:attribute key="company" value-ref="#[groovy:creatednetsuitecompany]" />
+                    <netsuite:attribute key="lastName" value-ref="#[groovy:payload.getLastName()]" />
+                    <netsuite:attribute key="firstName" value-ref="#[groovy:payload.getFirstName()]" />
+                    
+                    <netsuite:attribute key="email" value-ref="#[groovy: 'whatever@whatever.com']" />
+            
+                    
+                </netsuite:attributes>
+            </netsuite:add-record>
+        
+            
+            
+            <logger level="INFO" message="Created: #[payload:]" doc:name="Logger"/>
+            
+            
+        
+      
+    
+    </sub-flow>
+    
+    
+    
+    <!-- 
+     <sub-flow name="CreateNetsuiteCustomerContact">
+            
+            
+            <logger level="INFO" message="CreatingNetsuiteCustomerContact"/>
+            <netsuite:add-record recordType="CUSTOMER" config-ref="netsuite-config"  doc:name="Netsuite">
+                <netsuite:attributes>
+                    <netsuite:attribute key="companyName" value-ref="#[groovy:payload.getName()]" />
+            
+                    
+                </netsuite:attributes>
+            </netsuite:add-record>
+            
+            
+            <logger level="INFO" message="Created: #[payload:]"/>
+    
+    </sub-flow>
+    
+     -->
+   
+    
+    
+    <sub-flow name="GetZuoraAccountInfo" doc:name="GetZuoraAccountInfo">
+    
+    <logger level="INFO" message="In Create Account: #[groovy:payload.getAccountId();]" doc:name="Logger"/>
+    
+    
+        <zuora:find config-ref="Zuora" zquery="select Name,Id FROM Account where id='4028e6963716432e01374fe806cc79e1'" doc:name="Zuora"/>
+                
+                 <scripting:transformer doc:name="Script">
+                        <scripting:script engine="groovy">
+                <scripting:text><![CDATA[def newpayload = payload.first()
+                                                            
+                                                            
+                                                            return newpayload;]]></scripting:text>
+                        </scripting:script>
+                  </scripting:transformer>
+                  
+    
+    
+    </sub-flow>
+    
+    <sub-flow name="UpsertSFDCAccount" doc:name="UpsertSFDCAccount">
+    
+        
+            <logger level="INFO" message="Upserting sfdc account" doc:name="Logger"/>
+            
+            <sfdc:upsert config-ref="Salesforce" type="Account" doc:name="Salesforce" externalIdFieldName="AccountID__c">
+            <sfdc:objects>
+            
+                <sfdc:object >
+                    <Name>#[groovy:zuoraaccountinfo.getName()]</Name>
+                    <AccountID__c>#[groovy:zuoraaccountinfo.getId()]</AccountID__c>
+                </sfdc:object>
+            
+            </sfdc:objects>
+        </sfdc:upsert>
+        
+                    <scripting:transformer doc:name="Script">
+                        <scripting:script engine="groovy">
+                <scripting:text><![CDATA[def idstring = payload.id[0];
+                                                            
+                                                            println idstring;
+                                                            
+                                                            return idstring;]]></scripting:text>
+                        </scripting:script>
+                  </scripting:transformer>
+       
+        
+        <logger level="INFO" message="Saved Account: #[payload:]" doc:name="Logger"/>
+        
+        
+        
+        
+        
+          
+        
+    
+    </sub-flow>
+    
+    
+    
+</mule>
